@@ -120,7 +120,7 @@ class TradingEnv(gymnasium.Env, TimeIndexed):
         float
             The computed reward for performing the action.
         bool
-            Whether or not the episode is complete.
+            Whether or not the episode is complete (done = terminated or truncated).
         dict
             The information gathered after completing the step.
         """
@@ -134,7 +134,11 @@ class TradingEnv(gymnasium.Env, TimeIndexed):
 
         self.clock.increment()
 
-        return obs, reward, terminated, truncated, info
+        # Backwards compatibility: return a 4-tuple (obs, reward, done, info)
+        # where `done` follows the older Gym API (True when terminated OR truncated).
+        done = bool(terminated or truncated)
+
+        return obs, reward, done, info
 
     def reset(self,seed = None, options = None) -> tuple["np.array", dict[str, Any]]:
         """Resets the environment.

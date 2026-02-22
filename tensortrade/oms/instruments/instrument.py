@@ -159,3 +159,17 @@ AAPL = Instrument('AAPL', 2, 'Apple stock')
 MSFT = Instrument('MSFT', 2, 'Microsoft stock')
 TSLA = Instrument('TSLA', 2, 'Tesla stock')
 AMZN = Instrument('AMZN', 2, 'Amazon stock')
+
+# China market (stocks, indices, futures)
+# Currency
+CNY = Instrument('CNY', 2, 'Chinese Yuan')
+
+# Stocks (using commonly used market-prefixed symbols)
+SH600519 = Instrument('SH600519', 2, 'Kweichow Moutai (Shanghai)')
+SZ000001 = Instrument('SZ000001', 2, 'Ping An Bank (Shenzhen)')
+
+# Indices
+CSI300 = Instrument('CSI300', 2, 'CSI 300 Index')
+
+# Stock-index futures (symbol shorthand used on many exchanges)
+IF = Instrument('IF', 2, 'CSI 300 Index Futures')

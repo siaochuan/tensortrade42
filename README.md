@@ -85,6 +85,13 @@ To run the test suite, execute the following command.
 make run-tests
 ```
 
+### Compatibility notes ⚠️
+
+- Gym/Gymnasium: TensorTrade aims to be compatible with both `gym` and `gymnasium`. Historically environments returned a 4-tuple `(obs, reward, done, info)` while `gymnasium` returns a 5-tuple `(obs, reward, terminated, truncated, info)`. To preserve backwards compatibility in this codebase the trading environment's `step()` returns the older 4-tuple where `done = terminated or truncated`.
+- Tests: Some older `pytest` test setup methods used `setup()`; modern `pytest` expects `setup_method()` for per-test setup. Tests in the repository have been standardized to `setup_method()` to ensure consistent behavior across `pytest` versions.
+
+If you run into environment API mismatches when using different versions of `gym`/`gymnasium`, prefer running the test suite inside the provided Docker image (`make run-tests`) which matches CI and minimizes host dependency differences.
+
 ## Support
 
 You can ask questions and join the development discussion:
