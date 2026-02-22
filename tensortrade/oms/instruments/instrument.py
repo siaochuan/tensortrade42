@@ -28,10 +28,10 @@ class Instrument:
     ----------
     symbol : str
         The symbol used on an exchange for a particular instrument.
-        (e.g. AAPL, BTC, TSLA)
+        (e.g. AAPL, ETH, TSLA)
     precision : int
         The precision the amount of the instrument is denoted with.
-        (e.g. BTC=8, AAPL=1)
+        (e.g. ETH=8, AAPL=1)
     name : str, optional
         The name of the instrument being created.
     """

@@ -57,7 +57,7 @@ from tensortrade.env.default import informers
 
 # 使用正确的导入路径
 from tensortrade.oms.exchanges import Exchange
-from tensortrade.oms.instruments import USD, BTC, Instrument
+from tensortrade.oms.instruments import USD, ETH, Instrument
 from tensortrade.oms.instruments import Quantity
 from tensortrade.oms.wallets import Wallet, Portfolio
 from tensortrade.oms.orders import Order
@@ -67,7 +67,7 @@ np.warnings = warnings
 pd.options.mode.chained_assignment = None
 
 # 创建交易对
-BTC_USD = BTC / USD
+ETH_USD = ETH / USD
 
 # 创建模拟交易所服务函数
 def create_simulated_exchange_service():
@@ -91,12 +91,9 @@ def create_simulated_exchange_service():
 exchange = Exchange("coinbase", service=create_simulated_exchange_service())
 
 # 创建钱包和投资组合
-wallet_btc = Wallet(exchange, Quantity(BTC, 10))
+wallet_eth = Wallet(exchange, Quantity(ETH, 10))
 wallet_usd = Wallet(exchange, Quantity(USD, 10000))
 
-portfolio = Portfolio(USD, [
-    wallet_btc,
-    wallet_usd
-])
+portfolio = Portfolio(USD, [wallet_eth, wallet_usd])
 
 print("TensorTrade环境已成功创建！")
