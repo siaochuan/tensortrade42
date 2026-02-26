@@ -143,6 +143,10 @@ class CryptoDataDownload:
             A open, high, low, close and volume for the specified exchange and
             cryptocurrency pair.
         """
+        # route stock requests to akshare-backed fetch_stock
+        if exchange_name.lower() in ("akshare", "ak", "stock", "sh", "sz", "sse", "szse"):
+            return self.fetch_stock(base_symbol, timeframe)
+
         if exchange_name.lower() == "gemini":
             return self.fetch_gemini(base_symbol, quote_symbol, timeframe)
         return self.fetch_default(exchange_name,

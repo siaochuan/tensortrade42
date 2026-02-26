@@ -55,7 +55,7 @@ class Trade(TimedIdentifiable):
             order_id: The id of the order that created the trade.
             step: The timestep the trade was made during the trading episode.
             exchange_pair: The exchange pair of instruments in the trade.
-            (e.g. BTC/USDT, ETH/BTC, ADA/BTC, AAPL/USD, NQ1!/USD, CAD/USD, etc)
+            (e.g. ETH/USDT, ADA/USDT, AAPL/USD, NQ1!/USD, CAD/USD, etc)
             side: Whether the quote instrument is being bought or sold.
             (e.g. BUY = trade the `base_instrument` for the `quote_instrument` in the pair. SELL = trade the `quote_instrument` for the `base_instrument`)
             size: The size of the core instrument in the trade.

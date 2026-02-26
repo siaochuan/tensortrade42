@@ -18,7 +18,7 @@ import logging
 from typing import Dict, Any, Tuple
 from random import randint
 
-import gym
+import gymnasium
 import numpy as np
 
 from tensortrade.core import TimeIndexed, Clock, Component
@@ -32,7 +32,7 @@ from tensortrade.env.generic import (
 )
 
 
-class TradingEnv(gym.Env, TimeIndexed):
+class TradingEnv(gymnasium.Env, TimeIndexed):
     """A trading environment made for use with Gym-compatible reinforcement
     learning algorithms.
 
@@ -81,13 +81,6 @@ class TradingEnv(gym.Env, TimeIndexed):
         self.min_periods = min_periods
         self.random_start_pct = random_start_pct
 
-        # Register the environment in Gym and fetch spec
-        gym.envs.register(
-            id='TensorTrade-v0',
-            max_episode_steps=max_episode_steps,
-        )
-        self.spec = gym.spec(env_id='TensorTrade-v0')
-
         for c in self.components.values():
             c.clock = self.clock
 
@@ -127,7 +120,7 @@ class TradingEnv(gym.Env, TimeIndexed):
         float
             The computed reward for performing the action.
         bool
-            Whether or not the episode is complete.
+            Whether or not the episode is complete (done = terminated or truncated).
         dict
             The information gathered after completing the step.
         """
@@ -135,14 +128,19 @@ class TradingEnv(gym.Env, TimeIndexed):
 
         obs = self.observer.observe(self)
         reward = self.reward_scheme.reward(self)
-        done = self.stopper.stop(self)
+        terminated = self.stopper.stop(self)
+        truncated = False
         info = self.informer.info(self)
 
         self.clock.increment()
 
+        # Backwards compatibility: return a 4-tuple (obs, reward, done, info)
+        # where `done` follows the older Gym API (True when terminated OR truncated).
+        done = bool(terminated or truncated)
+
         return obs, reward, done, info
 
-    def reset(self) -> 'np.array':
+    def reset(self,seed = None, options = None) -> tuple["np.array", dict[str, Any]]:
         """Resets the environment.
 
         Returns
@@ -167,10 +165,11 @@ class TradingEnv(gym.Env, TimeIndexed):
                     c.reset()
 
         obs = self.observer.observe(self)
+        info = self.informer.info(self)
 
         self.clock.increment()
 
-        return obs
+        return obs, info
 
     def render(self, **kwargs) -> None:
         """Renders the environment."""

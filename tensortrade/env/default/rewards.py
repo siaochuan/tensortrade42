@@ -2,7 +2,6 @@
 from abc import abstractmethod
 
 import numpy as np
-import pandas as pd
 
 from tensortrade.env.generic import RewardScheme, TradingEnv
 from tensortrade.feed.core import Stream, DataFeed
@@ -125,7 +124,8 @@ class RiskAdjustedReturns(TensorTradeRewardScheme):
         ----------
         .. [1] https://en.wikipedia.org/wiki/Sharpe_ratio
         """
-        return (np.mean(returns) - self._risk_free_rate + 1e-9) / (np.std(returns) + 1e-9)
+        r = np.asarray(returns, dtype=np.float64)
+        return (np.mean(r) - self._risk_free_rate + 1e-9) / (np.std(r) + 1e-9)
 
     def _sortino_ratio(self, returns: 'pd.Series') -> float:
         """Computes the sortino ratio for a given series of a returns.
@@ -144,11 +144,13 @@ class RiskAdjustedReturns(TensorTradeRewardScheme):
         ----------
         .. [1] https://en.wikipedia.org/wiki/Sortino_ratio
         """
-        downside_returns = returns.copy()
-        downside_returns[returns < self._target_returns] = returns ** 2
+        r = np.asarray(returns, dtype=np.float64)
+        downside = r.copy()
+        mask = r < self._target_returns
+        downside[mask] = r[mask] ** 2
 
-        expected_return = np.mean(returns)
-        downside_std = np.sqrt(np.std(downside_returns))
+        expected_return = np.mean(r)
+        downside_std = np.sqrt(np.std(downside))
 
         return (expected_return - self._risk_free_rate + 1e-9) / (downside_std + 1e-9)
 
@@ -166,9 +168,12 @@ class RiskAdjustedReturns(TensorTradeRewardScheme):
             The reward corresponding to the selected risk-adjusted return metric.
         """
         net_worths = [nw['net_worth'] for nw in portfolio.performance.values()][-(self._window_size + 1):]
-        returns = pd.Series(net_worths).pct_change().dropna()
+        arr = np.asarray(net_worths, dtype=np.float64)
+        if arr.size < 2:
+            return 0.0
+        returns = np.diff(arr) / arr[:-1]
         risk_adjusted_return = self._return_algorithm(returns)
-        return risk_adjusted_return
+        return float(risk_adjusted_return)
 
 
 class PBR(TensorTradeRewardScheme):

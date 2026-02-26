@@ -7,7 +7,7 @@ import ta
 import tensortrade.env.default as default
 
 from tensortrade.oms.exchanges import Exchange
-from tensortrade.oms.instruments import USD, BTC, ETH, LTC
+from tensortrade.oms.instruments import USD, ETH, LTC
 from tensortrade.oms.wallets import Portfolio, Wallet
 from tensortrade.env.default.actions import ManagedRiskOrders
 from tensortrade.env.default.rewards import SimpleProfit
@@ -39,10 +39,8 @@ def portfolio():
 
     p = Portfolio(USD, [
         Wallet(ex1, 10000 * USD),
-        Wallet(ex1, 10 * BTC),
         Wallet(ex1, 5 * ETH),
         Wallet(ex2, 1000 * USD),
-        Wallet(ex2, 5 * BTC),
         Wallet(ex2, 20 * ETH),
         Wallet(ex2, 3 * LTC),
     ])
@@ -55,7 +53,6 @@ def test_runs_with_external_feed_only(portfolio):
     df = df.rename({"Unnamed: 0": "date"}, axis=1)
     df = df.set_index("date")
 
-    bitfinex_btc = df.loc[:, [name.startswith("BTC") for name in df.columns]]
     bitfinex_eth = df.loc[:, [name.startswith("ETH") for name in df.columns]]
 
     ta.add_all_ta_features(
@@ -71,8 +68,6 @@ def test_runs_with_external_feed_only(portfolio):
 
     streams = []
     with NameSpace("bitfinex"):
-        for name in bitfinex_btc.columns:
-            streams += [Stream.source(list(bitfinex_btc[name]), dtype="float").rename(name)]
         for name in bitfinex_eth.columns:
             streams += [Stream.source(list(bitfinex_eth[name]), dtype="float").rename(name)]
 
@@ -105,7 +100,6 @@ def test_runs_with_random_start(portfolio):
     df = df.rename({"Unnamed: 0": "date"}, axis=1)
     df = df.set_index("date")
 
-    bitfinex_btc = df.loc[:, [name.startswith("BTC") for name in df.columns]]
     bitfinex_eth = df.loc[:, [name.startswith("ETH") for name in df.columns]]
 
     ta.add_all_ta_features(
@@ -121,8 +115,6 @@ def test_runs_with_random_start(portfolio):
 
     streams = []
     with NameSpace("bitfinex"):
-        for name in bitfinex_btc.columns:
-            streams += [Stream.source(list(bitfinex_btc[name]), dtype="float").rename(name)]
         for name in bitfinex_eth.columns:
             streams += [Stream.source(list(bitfinex_eth[name]), dtype="float").rename(name)]
 
